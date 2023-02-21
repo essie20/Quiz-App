@@ -1,11 +1,7 @@
-import { useState } from 'react'
+import { useState } from "react";
 
 function App() {
-  return (
-    <div className="App">
-      quize!
-    </div>
-  )
+  return <div className="m-3">quiz!</div>;
 }
 
-export default App
+export default App;
