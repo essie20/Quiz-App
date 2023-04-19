@@ -27,7 +27,7 @@ jobs:
       - name: Set identity email
         run: git config --global user.email "essie20@github.com"
       - name: Set identity user
-        run: git config --global user.name "Deploy Script"
+        run: git config --global user.name "essie20"
       - name: Deploy to GH Pages
         run: npm run deploy
 
