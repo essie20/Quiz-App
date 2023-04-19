@@ -18,18 +18,7 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-      - name: Setup Pages
-        uses: actions/configure-pages@v3
-      - name: install dependencies
-        run: npm install
-      - name: build app
-        run: npm run build
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v1
+      - id: build-publish
+        uses: bitovi/github-actions-react-to-ghp@v1.2.0
         with:
-          path: 'dist'
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v2
+          path: build # change to your build folder
