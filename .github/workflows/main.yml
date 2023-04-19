@@ -24,9 +24,10 @@ jobs:
         run: npm install
       - name: build app
         run: npm run build
-      - name: Set identity
+      - name: Set identity email
         run: git config --global user.email "essie20@github.com"
-             git config --global user.name "Deploy Script"
+      - name: Set identity user
+        run: git config --global user.name "Deploy Script"
       - name: Deploy to GH Pages
         run: npm run deploy
 
