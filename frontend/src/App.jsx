@@ -13,7 +13,13 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 library.add(faBook);
 
 function App() {
-  const collectionsQuery = useQuery(["getCollections"], getCollections);
+  const collectionsQuery = useQuery({
+    queryKey: ["getCollections"],
+    queryFn: getCollections,
+    staleTime: Infinity,
+    cacheTime: Infinity,
+    refetchOnWindowFocus: false,
+  });
 
   return (
     <div className="m-3">

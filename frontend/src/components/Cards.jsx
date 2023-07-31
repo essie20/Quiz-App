@@ -2,6 +2,16 @@ import React, { useState, useEffect } from "react";
 import { getCards } from "../api/quizData";
 import { useQuery } from "@tanstack/react-query";
 import { useParams } from "react-router-dom";
+import {
+  faArrowRight,
+  faArrowLeft,
+  faShuffle,
+} from "@fortawesome/free-solid-svg-icons";
+import { library } from "@fortawesome/fontawesome-svg-core";
+
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+
+library.add(faArrowRight, faArrowLeft, faShuffle);
 
 export default function Cards() {
   const { id } = useParams();
@@ -57,6 +67,7 @@ export default function Cards() {
         <span>
           Card: {getIndex() + 1} / {cards?.length}
         </span>
+
         {currentCard ? (
           <div>
             <div className="flex justify-center">
@@ -75,18 +86,38 @@ export default function Cards() {
               {getIndex() !== 0 && (
                 <button
                   onClick={handlePreviousCardClick}
-                  className="m-1 rounded border border-indigo-300 bg-indigo-200 p-1 hover:bg-indigo-300"
+                  className="m-1 rounded border border-indigo-300 bg-indigo-200 p-1.5 hover:bg-indigo-300"
                 >
-                  Back
+                  <FontAwesomeIcon
+                    icon={faArrowLeft}
+                    className="text-xl text-indigo-700"
+                  />
                 </button>
               )}
+
               <button
                 onClick={handleNextCardClick}
-                className="m-1 rounded border border-indigo-300 bg-indigo-200 p-1 hover:bg-indigo-300"
+                className="m-1 rounded border border-indigo-300 bg-indigo-200 p-1.5 hover:bg-indigo-300"
               >
-                Next
+                <FontAwesomeIcon
+                  icon={faArrowRight}
+                  className="text-xl text-indigo-700"
+                />
               </button>
             </div>
+            {getIndex() == 0 && (
+              <div className="flex justify-center">
+                <button
+                  //onClick={handleClick}
+                  className="m-1 mt-2 rounded-full border border-green-300 bg-green-500 p-1.5 pl-5 pr-5 text-white hover:bg-green-400"
+                >
+                  <FontAwesomeIcon
+                    icon={faShuffle}
+                    className="text-xl text-white"
+                  />
+                </button>
+              </div>
+            )}
           </div>
         ) : (
           <div>

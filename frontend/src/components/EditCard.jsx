@@ -1,18 +1,34 @@
 import React, { useState } from "react";
 
-export default function EditCard({ deleteCard, cardId, inputCard, saveCard }) {
+export default function EditCard({
+  deleteCard,
+  cardId,
+  inputCard,
+  saveCard,
+  SetCards,
+  cards,
+}) {
   const [editingCard, setEditingCard] = useState(inputCard);
   const [errorMessage, setErrorMessage] = useState("");
 
   const handleFrontChange = (event) => {
     const value = event.target.value;
-    setEditingCard({ ...editingCard, frontContent: value });
+    //setEditingCard({ ...editingCard, frontContent: value });
+    let newCards = [...cards];
+
+    newCards.forEach((card) => {
+      if (card.id == inputCard.id) {
+        card.frontContent = value;
+      }
+    });
+    SetCards(newCards);
     setErrorMessage("");
   };
 
   const handleBackChange = (event) => {
     const value = event.target.value;
-    setEditingCard({ ...editingCard, backContent: value });
+    //setEditingCard({ ...editingCard, backContent: value });
+    SetCards([...cards, { ...inputCard, backContent: value }]);
     setErrorMessage("");
   };
 

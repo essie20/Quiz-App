@@ -111,24 +111,6 @@ export default function Collections({ collections }) {
     setInputValue(collectionName);
   };
 
-  // const handleNameChange = (e) => {
-  //   setInputValue(e.target.value);
-  // };
-
-  // const handleSaveClick = () => {
-  //   setNewCollection((prevCollection) => ({
-  //     ...prevCollection,
-  //     name: inputValue,
-  //   }));
-
-  //   updateCollectionMutation.mutate({
-  //     id: editingCollectionId,
-  //     name: inputValue,
-  //   });
-
-  //   setEditingCollectionId(null);
-  // };
-
   const handleButtonHover = (collectionId) => {
     setHoveredButton(collectionId);
   };

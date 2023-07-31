@@ -13,10 +13,14 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 export default function EditCollection({ collectionsQuery }) {
   const queryClient = useQueryClient();
   const { id } = useParams();
+  console.log("id", id);
 
   const [currentCollection, setCurrentCollection] = useState(
     collectionsQuery.data?.find((collection) => collection.id == id)
   );
+  console.log("collectionQuery.data", collectionsQuery.data);
+  console.log("currentCollection", currentCollection);
+
   const [newCard, setNewCard] = useState();
 
   useEffect(() => {
@@ -25,11 +29,32 @@ export default function EditCollection({ collectionsQuery }) {
     );
   }, [collectionsQuery.data]);
 
-  const collectionCardsQuery = useQuery(["cards"], () => {
-    return getCards(id);
+  const collectionCardsQuery = useQuery({
+    queryKey: ["cards"],
+    queryFn: () => {
+      return getCards(id);
+    },
+    staleTime: Infinity,
+    cacheTime: Infinity,
+    refetchOnWindowFocus: false,
   });
+  console.log("collectionCardsQuery.data", collectionCardsQuery.data);
+  console.log("getCards", getCards(id));
+  console.log("collectionCardsQuery.data2", collectionCardsQuery.data);
 
-  const [cards, SetCards] = useState([collectionCardsQuery.data]);
+  const [cards, SetCards] = useState(collectionCardsQuery.data);
+
+  useEffect(() => {
+    SetCards(collectionCardsQuery.data);
+  }, [collectionCardsQuery.data]);
+
+  const saveAllCards = (e) => {
+    console.log(cards);
+    cards.forEach((card) => {
+      if (card.dirty) {
+      }
+    });
+  };
 
   const updateCardMutation = useMutation({
     mutationFn: saveCard,
@@ -77,22 +102,25 @@ export default function EditCollection({ collectionsQuery }) {
         <DeleteAllCards
           collectionId={id}
           deleteAllCards={deleteAllCardsMutation.mutate}
-          cards={collectionCardsQuery.data}
+          cards={cards}
           deleteMutation={deleteCardMutation}
         />
         <button
-          type="submit"
+          type="button"
           className="ml-2 rounded border border-green-400 bg-green-200 p-1 hover:bg-green-500"
+          onClick={saveAllCards}
         >
           Save All
         </button>
       </div>
 
       <div className="flex flex-wrap">
-        {collectionCardsQuery.data.map((card) => {
+        {cards?.map((card) => {
           return (
             <EditCard
               inputCard={card}
+              SetCards={SetCards}
+              cards={cards}
               deleteCard={deleteCardMutation.mutate}
               saveCard={updateCardMutation.mutate}
               cardId={card.id}
@@ -104,6 +132,8 @@ export default function EditCollection({ collectionsQuery }) {
         {newCard ? (
           <EditCard
             inputCard={newCard}
+            SetCards={SetCards}
+            cards={cards}
             deleteCard={() => {
               setNewCard(null);
             }}
