@@ -1,63 +1,45 @@
 import React, { useState } from "react";
 
-export default function EditCard({
-  deleteCard,
-  cardId,
-  inputCard,
-  saveCard,
-  SetCards,
-  cards,
-}) {
-  const [editingCard, setEditingCard] = useState(inputCard);
+export default function EditCard({ cardToEdit, setCards, cards }) {
   const [errorMessage, setErrorMessage] = useState("");
 
-  const handleFrontChange = (event) => {
+  const handleChange = (event, side) => {
     const value = event.target.value;
-    //setEditingCard({ ...editingCard, frontContent: value });
-    let newCards = [...cards];
+    let editedCards = [...cards];
 
-    newCards.forEach((card) => {
-      if (card.id == inputCard.id) {
-        card.frontContent = value;
+    let targetCard = editedCards.find((card) => {
+      if (cardToEdit.id && card.id == cardToEdit.id) {
+        return card;
+      } else if (cards.indexOf(cardToEdit) == editedCards.indexOf(card)) {
+        return card;
       }
     });
-    SetCards(newCards);
-    setErrorMessage("");
-  };
 
-  const handleBackChange = (event) => {
-    const value = event.target.value;
-    //setEditingCard({ ...editingCard, backContent: value });
-    SetCards([...cards, { ...inputCard, backContent: value }]);
-    setErrorMessage("");
-  };
+    targetCard[side] = value;
+    targetCard.dirty = true;
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
+    setErrorMessage("");
+    targetCard.invalid = false;
 
     if (
-      editingCard.frontContent.trim() === "" ||
-      editingCard.backContent.trim() === ""
+      cardToEdit.frontContent.trim() === "" ||
+      cardToEdit.backContent.trim() === ""
     ) {
+      targetCard.invalid = true;
       setErrorMessage("Input cannot be empty.");
-      return;
     }
 
     if (
-      editingCard.frontContent.length < 2 ||
-      editingCard.frontContent.length > 10 ||
-      editingCard.backContent.length < 2 ||
-      editingCard.backContent.length > 10
+      cardToEdit.frontContent.length < 2 ||
+      cardToEdit.frontContent.length > 10 ||
+      cardToEdit.backContent.length < 2 ||
+      cardToEdit.backContent.length > 10
     ) {
+      targetCard.invalid = true;
       setErrorMessage("Input length should be between 2 and 10 characters.");
-      return;
     }
 
-    saveCard(editingCard);
-
-    // Reset the editing card state and error message
-    setEditingCard({ frontContent: "", backContent: "" });
-    setErrorMessage("");
+    setCards(editedCards);
   };
 
   const inputClassName = errorMessage
@@ -65,40 +47,52 @@ export default function EditCard({
     : "w-max rounded p-1 outline-1 outline-indigo-300";
 
   return (
-    <form onSubmit={handleSubmit}>
-      <div className="m-2 rounded-md border border-gray-700 p-4 shadow-md">
-        <div className="mb-4 grid">
-          <label className="inline-block w-max">Front</label>
-          <input
-            type="text"
-            className={inputClassName}
-            placeholder="Front text"
-            value={editingCard.frontContent}
-            onChange={handleFrontChange}
-          />
+    <div
+      className={`m-2 max-w-[14rem] rounded-md border  ${
+        cardToEdit.dirty ? "border-gray-600" : "border-blue-600"
+      } p-4 shadow-md`}
+    >
+      <div className="mb-2 grid">
+        <label className="inline-block w-max">Front</label>
+        <input
+          type="text"
+          className={inputClassName}
+          placeholder="Front text"
+          value={cardToEdit.frontContent}
+          onChange={(event) => {
+            handleChange(event, "frontContent");
+          }}
+        />
 
-          <label className="inline-block w-max">Back</label>
-          <input
-            type="text"
-            className={inputClassName}
-            placeholder="Back text"
-            value={editingCard.backContent}
-            onChange={handleBackChange}
-          />
-        </div>
-
-        <div className="flex justify-end pt-2">
-          <button
-            onClick={() => {
-              deleteCard(cardId);
-            }}
-            className="ml-2 rounded border border-red-400 bg-red-200 p-1 hover:bg-red-500"
-          >
-            Delete
-          </button>
-        </div>
-        {errorMessage && <p className="text-red-500">{errorMessage}</p>}
+        <label className="inline-block w-max">Back</label>
+        <input
+          type="text"
+          className={inputClassName}
+          placeholder="Back text"
+          value={cardToEdit.backContent}
+          onChange={(event) => {
+            handleChange(event, "backContent");
+          }}
+        />
       </div>
-    </form>
+      {errorMessage && (
+        <div className="text-sm font-light text-red-500">{errorMessage}</div>
+      )}
+
+      <div className="flex justify-end pt-2">
+        <button
+          onClick={() => {
+            let i = cards.indexOf(cardToEdit);
+            let newCards = [...cards];
+            newCards.splice(i, 1);
+            setCards(newCards);
+            // TODO: Make it work for saved cards
+          }}
+          className="ml-2 rounded border border-red-400 bg-red-200 p-1 hover:bg-red-500"
+        >
+          Delete
+        </button>
+      </div>
+    </div>
   );
 }

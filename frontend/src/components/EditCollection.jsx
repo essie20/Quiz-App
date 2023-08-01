@@ -13,15 +13,12 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 export default function EditCollection({ collectionsQuery }) {
   const queryClient = useQueryClient();
   const { id } = useParams();
-  console.log("id", id);
 
   const [currentCollection, setCurrentCollection] = useState(
     collectionsQuery.data?.find((collection) => collection.id == id)
   );
-  console.log("collectionQuery.data", collectionsQuery.data);
-  console.log("currentCollection", currentCollection);
 
-  const [newCard, setNewCard] = useState();
+  const [newCards, setNewCards] = useState([]);
 
   useEffect(() => {
     setCurrentCollection(
@@ -38,20 +35,19 @@ export default function EditCollection({ collectionsQuery }) {
     cacheTime: Infinity,
     refetchOnWindowFocus: false,
   });
-  console.log("collectionCardsQuery.data", collectionCardsQuery.data);
-  console.log("getCards", getCards(id));
-  console.log("collectionCardsQuery.data2", collectionCardsQuery.data);
 
-  const [cards, SetCards] = useState(collectionCardsQuery.data);
+  const [cards, setCards] = useState(collectionCardsQuery.data);
 
   useEffect(() => {
-    SetCards(collectionCardsQuery.data);
+    setCards(collectionCardsQuery.data);
   }, [collectionCardsQuery.data]);
 
   const saveAllCards = (e) => {
-    console.log(cards);
-    cards.forEach((card) => {
-      if (card.dirty) {
+    // TODO: Also save edited cards
+    newCards.forEach((card) => {
+      if (card.dirty && !card.invalid) {
+        console.log(updateCardMutation);
+        updateCardMutation.mutate(card);
       }
     });
   };
@@ -61,9 +57,8 @@ export default function EditCollection({ collectionsQuery }) {
     onSuccess: (result) => {
       // Invalidate and refetch
       queryClient.invalidateQueries({ queryKey: ["cards"] });
-      if (result.newCard) {
-        setNewCard(null); //clear (react useState) new card if it was saved
-      }
+      // remove the saved card from the list of new cards
+      setNewCards([]);
     },
   });
 
@@ -118,41 +113,43 @@ export default function EditCollection({ collectionsQuery }) {
         {cards?.map((card) => {
           return (
             <EditCard
-              inputCard={card}
-              SetCards={SetCards}
+              cardToEdit={card}
+              setCards={setCards}
               cards={cards}
-              deleteCard={deleteCardMutation.mutate}
-              saveCard={updateCardMutation.mutate}
               cardId={card.id}
               key={card.id}
             />
           );
         })}
-        {/* This is for new UNSAVED card (doesn't have an id) */}
-        {newCard ? (
-          <EditCard
-            inputCard={newCard}
-            SetCards={SetCards}
-            cards={cards}
-            deleteCard={() => {
-              setNewCard(null);
-            }}
-            saveCard={updateCardMutation.mutate}
-          />
-        ) : null}
+
+        {newCards?.map((card) => {
+          return (
+            <EditCard
+              cardToEdit={card}
+              setCards={setNewCards}
+              cards={newCards}
+              cardId={card.id}
+              key={newCards.indexOf(card)}
+            />
+          );
+        })}
+
         <button
-          className="m-2 rounded-md border border-gray-700 p-4 pb-8 shadow-md duration-300 ease-in-out hover:scale-110"
+          className="m-2 h-[13rem] w-[13rem] rounded-md border border-gray-700 p-4 pb-8 shadow-md duration-300 ease-in-out hover:scale-110"
           onClick={() => {
-            setNewCard({
-              frontContent: "",
-              backContent: "",
-              collectionId: id,
-            });
+            setNewCards([
+              ...newCards,
+              {
+                frontContent: "",
+                backContent: "",
+                collectionId: id,
+                dirty: true,
+              },
+            ]);
             setShowMsg(false);
           }}
         >
           <div className="text-7xl">+</div>
-          Add new card
         </button>
       </div>
     </>

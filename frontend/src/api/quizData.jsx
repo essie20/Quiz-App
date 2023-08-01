@@ -7,7 +7,6 @@ const instance = axios.create({
 
 export async function getCollections() {
   const res = await instance.get("/collections");
-  console.log("/collections data", res.data);
   return res.data;
 }
 
@@ -29,10 +28,10 @@ export async function saveCollection(collection) {
 
 export async function getCards(collectionId) {
   const res = await instance.get(`/cards/${collectionId}`);
-  console.log(`/cards/${collectionId} result`, res.data);
   return res.data;
 }
 export async function saveCard(card) {
+  console.log("saving", card);
   if (card.id) {
     //ID means we should update (put)
     const res = await instance.put(`/cards/${card.id}`, card);
@@ -40,7 +39,6 @@ export async function saveCard(card) {
   } else {
     //no ID means we should create (post)
     const res = await instance.post(`/cards`, card);
-    res.data.newCard = true;
     return res.data;
   }
 }
