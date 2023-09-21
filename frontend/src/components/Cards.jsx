@@ -23,13 +23,18 @@ export default function Cards() {
   const cards = collectionCardsQuery.data;
   const loading = collectionCardsQuery.isLoading;
 
-  const [currentCard, setCurrentCard] = useState({});
+  const [currentCardIndex, setCurrentCardIndex] = useState(0);
   const [flip, setFlip] = useState(false);
   const [disableAnimations, setDisableAnimations] = useState(false);
+  const [shuffledCards, setShuffledCards] = useState(cards);
+
+  const shuffleCards = () => {
+    setShuffledCards([...cards].sort(() => Math.random() - 0.5));
+  };
 
   useEffect(() => {
     if (!loading && cards?.length > 0) {
-      setCurrentCard(cards[0]);
+      setCurrentCardIndex(0);
     }
   }, [cards, loading]);
 
@@ -39,36 +44,34 @@ export default function Cards() {
     setTimeout(() => {
       setDisableAnimations(false);
     }, 400);
-  }, [currentCard]);
-
-  const getIndex = () => cards?.indexOf(currentCard);
+  }, []);
 
   const handleNextCardClick = () => {
-    if (getIndex() < cards?.length - 1) {
-      setCurrentCard(cards[getIndex() + 1]);
+    if (currentCardIndex < cards?.length - 1) {
+      setCurrentCardIndex(currentCardIndex + 1);
     } else {
-      setCurrentCard(cards[cards.length]);
+      setCurrentCardIndex(-1);
     }
   };
 
   const handlePreviousCardClick = () => {
-    if (getIndex() > 0) {
-      setCurrentCard(cards[getIndex() - 1]);
+    if (currentCardIndex > 0) {
+      setCurrentCardIndex(currentCardIndex - 1);
     }
   };
 
   const handleStartAgainClick = () => {
-    setCurrentCard(cards[0]);
+    setCurrentCardIndex(0);
   };
 
   if (cards) {
     return (
       <div className="p-4">
         <span>
-          Card: {getIndex() + 1} / {cards?.length}
+          Card: {currentCardIndex + 1} / {cards?.length}
         </span>
 
-        {currentCard ? (
+        {shuffledCards[currentCardIndex] ? (
           <div>
             <div className="flex justify-center">
               <div
@@ -78,12 +81,16 @@ export default function Cards() {
               m-5 flex h-96 w-96 cursor-pointer select-none items-center justify-center border border-gray-500 p-16 text-center text-3xl shadow-md shadow-gray-400 hover:shadow-lg hover:shadow-gray-500`}
                 onClick={() => setFlip(!flip)}
               >
-                <div className="front">{currentCard.frontContent}</div>
-                <div className="back absolute">{currentCard.backContent}</div>
+                <div className="front">
+                  {shuffledCards[currentCardIndex].frontContent}
+                </div>
+                <div className="back absolute">
+                  {shuffledCards[currentCardIndex].backContent}
+                </div>
               </div>
             </div>
             <div className="flex justify-center">
-              {getIndex() !== 0 && (
+              {currentCardIndex !== 0 && (
                 <button
                   onClick={handlePreviousCardClick}
                   className="m-1 rounded border border-indigo-300 bg-indigo-200 p-1.5 hover:bg-indigo-300"
@@ -105,10 +112,10 @@ export default function Cards() {
                 />
               </button>
             </div>
-            {getIndex() == 0 && (
+            {currentCardIndex == 0 && (
               <div className="flex justify-center">
                 <button
-                  //onClick={handleClick}
+                  onClick={shuffleCards}
                   className="m-1 mt-2 rounded-full border border-green-300 bg-green-500 p-1.5 pl-5 pr-5 text-white hover:bg-green-400"
                 >
                   <FontAwesomeIcon
