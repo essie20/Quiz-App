@@ -13,7 +13,6 @@ export default function DeleteCollection({
   handleDeleteCollection,
   onDeleteMouseEnter,
   onDeleteMouseLeave,
-  isHovered,
 }) {
   const [showConfirmation, setShowConfirmation] = useState(false);
 
@@ -38,14 +37,10 @@ export default function DeleteCollection({
     setShowConfirmation(false);
     setShowDeleteMessage(false);
   };
-  const [isHoveredButton, setIsHoveredButton] = useState(isHovered);
 
-  useEffect(() => {
-    setIsHoveredButton(isHovered);
-  }, [isHovered]);
   return (
     <div className="relative">
-      <div className="rounded-lg rounded border border-red-400 font-semibold text-rose-600 hover:bg-red-600 hover:text-white">
+      <div className="">
         <button
           onClick={handleDelete}
           className="p-2"
@@ -55,11 +50,6 @@ export default function DeleteCollection({
           <FontAwesomeIcon className="" icon="trash" />
         </button>
       </div>
-      {isHoveredButton && (
-        <div className="absolute bottom-0 left-0 right-0 mb-8 w-11 w-24 whitespace-nowrap rounded-2xl border border-rose-500 bg-white p-1 text-xs text-black">
-          Delete
-        </div>
-      )}
 
       {showConfirmation && (
         <div className="modal">

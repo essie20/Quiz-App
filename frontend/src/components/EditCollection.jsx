@@ -9,6 +9,12 @@ import {
   deleteAllCards,
 } from "../api/quizData";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { faFloppyDisk } from "@fortawesome/free-solid-svg-icons";
+import { library } from "@fortawesome/fontawesome-svg-core";
+
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+
+library.add(faFloppyDisk);
 
 export default function EditCollection({ collectionsQuery }) {
   const queryClient = useQueryClient();
@@ -43,10 +49,8 @@ export default function EditCollection({ collectionsQuery }) {
   }, [collectionCardsQuery.data]);
 
   const saveAllCards = (e) => {
-    // TODO: Also save edited cards
-    newCards.forEach((card) => {
+    cards.concat(newCards).forEach((card) => {
       if (card.dirty && !card.invalid) {
-        console.log(updateCardMutation);
         updateCardMutation.mutate(card);
       }
     });
@@ -95,9 +99,11 @@ export default function EditCollection({ collectionsQuery }) {
         </div>
 
         <DeleteAllCards
-          collectionId={id}
-          deleteAllCards={deleteAllCardsMutation.mutate}
-          cards={cards}
+          deleteAllCards={() => {
+            if (cards.length) deleteAllCardsMutation.mutate(id);
+            setNewCards([]);
+          }}
+          cards={cards.concat(newCards)}
           deleteMutation={deleteCardMutation}
         />
         <button
@@ -106,6 +112,7 @@ export default function EditCollection({ collectionsQuery }) {
           onClick={saveAllCards}
         >
           Save All
+          <FontAwesomeIcon className="ml-2" icon="floppy-disk" />
         </button>
       </div>
 
@@ -118,6 +125,7 @@ export default function EditCollection({ collectionsQuery }) {
               cards={cards}
               cardId={card.id}
               key={card.id}
+              deleteCardMutation={deleteCardMutation}
             />
           );
         })}
@@ -130,6 +138,7 @@ export default function EditCollection({ collectionsQuery }) {
               cards={newCards}
               cardId={card.id}
               key={newCards.indexOf(card)}
+              deleteCardMutation={deleteCardMutation}
             />
           );
         })}

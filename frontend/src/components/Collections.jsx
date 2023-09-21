@@ -18,6 +18,7 @@ import {
 import { library } from "@fortawesome/fontawesome-svg-core";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import ToolTip from "./Tooltip";
 
 library.add(faEdit, faBookOpen, faTrash, faPlus, faCheck);
 
@@ -31,8 +32,6 @@ export default function Collections({ collections }) {
   const [newCollection, setNewCollection] = useState({ id: "", name: "" });
   const inputRef = useRef(null);
   const [showInput, setShowInput] = useState(false);
-  const [hoveredButton, setHoveredButton] = useState(null);
-  const [hoveredDeleteButton, setHoveredDeleteButton] = useState(null);
 
   const inputClassName = errorMessage
     ? "w-40 rounded p-1 outline-1 outline-red-500 border-2 border-gray-400"
@@ -111,14 +110,6 @@ export default function Collections({ collections }) {
     setInputValue(collectionName);
   };
 
-  const handleButtonHover = (collectionId) => {
-    setHoveredButton(collectionId);
-  };
-
-  const handleDeleteButtonHover = (collectionId) => {
-    setHoveredDeleteButton(collectionId);
-  };
-
   if (collections.isLoading || collections.isRefetching)
     return <div>Loading...</div>;
   return (
@@ -143,16 +134,16 @@ export default function Collections({ collections }) {
           </div>
         )}
       </div>
-      <div className="flex h-60 flex-wrap gap-4 border border-2">
+      <div className="flex h-60 flex-wrap gap-4 border-2">
         {currentCollections
           ?.slice()
           .reverse()
           .map((collection) => (
             <div
               key={collection.id}
-              className="box-border h-48 w-80 rounded-xl border border-2 border-gray-400 p-2 p-3 shadow-md shadow-gray-500"
+              className="box-border flex h-48 w-80 flex-col rounded-xl border-2 border-gray-400 p-3 shadow-md shadow-gray-500"
             >
-              <div className="rounded-xl border p-2 ">
+              <div className="flex-grow rounded-xl border p-2">
                 {editingCollectionId === collection.id ? (
                   <div className="m-1 flex items-center justify-center">
                     <form onSubmit={handleSubmit}>
@@ -167,7 +158,7 @@ export default function Collections({ collections }) {
 
                       <button
                         type="submit"
-                        className="bg-grey-100 ml-2 rounded-xl rounded border border-slate-400 p-2 text-xs font-semibold hover:bg-slate-50"
+                        className="bg-grey-100 ml-2 rounded border border-slate-400 p-2 text-xs font-semibold hover:bg-slate-50"
                       >
                         <FontAwesomeIcon
                           icon={faCheck}
@@ -181,74 +172,73 @@ export default function Collections({ collections }) {
                   </div>
                 ) : (
                   <div className="flex items-center p-3 text-lg font-bold">
-                    {collection.name}
-                    <div className="bg-grey-100 ml-2 rounded-2xl rounded border border-slate-400 p-2 text-xs font-semibold text-slate-700 hover:bg-slate-50">
-                      <button
-                        onClick={() =>
-                          handleEditClick(collection.id, collection.name)
-                        }
-                      >
-                        Edit
-                        <FontAwesomeIcon icon={faEdit} className="ml-2" />
-                      </button>
-                    </div>
+                    <button
+                      onClick={() =>
+                        handleEditClick(collection.id, collection.name)
+                      }
+                    >
+                      {collection.name}
+                      <FontAwesomeIcon
+                        icon={faEdit}
+                        className="ml-2"
+                        size="xs"
+                        color="gray"
+                      />
+                    </button>
                   </div>
                 )}
               </div>
-
-              <div className="mt-4 flex flex justify-end gap-1.5 text-sm ">
-                <div className="bg-grey-700 relative mt-8 inline-block rounded-lg rounded border border-blue-700 p-2 font-semibold text-blue-700 hover:bg-blue-600 hover:text-white ">
-                  <Link
-                    to={"collections/" + collection.id.toString()}
-                    // onClick={() => {
-                    //   handleClick(new Date());
-                    //   setClickedCollection(collection.id);
-                    // }}
-                    onMouseEnter={() => handleButtonHover(collection.id)}
-                    onMouseLeave={() => setHoveredButton(null)}
-                  >
+              <div className="flex justify-end gap-1.5 text-sm">
+                <ToolTip
+                  className={
+                    "mt-4 rounded border border-black bg-white p-1 text-xs text-black"
+                  }
+                  containerClassName={
+                    "h-10 rounded border border-blue-700 p-2 font-semibold text-blue-700 hover:bg-blue-600 hover:text-white"
+                  }
+                  tooltip={"Study"}
+                >
+                  <Link to={"collections/" + collection.id.toString()}>
                     <span className="flex items-center">
                       <FontAwesomeIcon className="pt-1" icon="book-open" />
                     </span>
                   </Link>
-                  {hoveredButton === collection.id && (
-                    <div className="absolute left-0 right-0 mt-2 w-11 whitespace-nowrap rounded-2xl border border-blue-500 bg-white p-1 text-xs text-black ">
-                      Study
-                    </div>
-                  )}
-                </div>
-                <div className="mt-8">
+                </ToolTip>
+
+                <ToolTip
+                  className={
+                    "mt-2 rounded border border-black bg-white p-1 text-xs text-black"
+                  }
+                  containerClassName={
+                    "h-10 rounded border border-red-400 font-semibold text-rose-600 hover:bg-red-600 hover:text-white"
+                  }
+                  tooltip={"Delete"}
+                >
                   <DeleteCollection
                     collectionId={collection.id}
                     deleteAllCards={deleteAllCards}
                     handleDeleteCollection={handleDeleteCollection}
-                    isHovered={hoveredDeleteButton === collection.id}
-                    onDeleteMouseEnter={() =>
-                      handleDeleteButtonHover(collection.id)
-                    }
-                    onDeleteMouseLeave={() => setHoveredDeleteButton(null)}
                   />
-                </div>
-                <div className="hover:text-black-800 mt-8 rounded-lg rounded border border-slate-400 p-2 font-semibold text-black hover:bg-white ">
+                </ToolTip>
+
+                <ToolTip
+                  className={
+                    "mt-4 rounded border border-black bg-white p-1 text-xs text-black"
+                  }
+                  containerClassName={
+                    "h-10 hover:text-black-800 rounded border border-slate-400 p-2 font-semibold text-black hover:bg-white"
+                  }
+                  tooltip={"Edit"}
+                >
                   <Link
                     to={
                       "collections/" + collection.id.toString() + "/cards/edit"
                     }
-                    onMouseEnter={() => handleButtonHover(collection.id)}
-                    onMouseLeave={() => setHoveredButton(null)}
                   >
                     <FontAwesomeIcon icon={faEdit} className="p-0.5" />
                   </Link>
-                  {hoveredButton === collection.id && (
-                    <div className="absolute left-0 right-0 top-full mt-1 w-24 whitespace-nowrap rounded-lg border border-rose-500 bg-white p-2 text-xs text-black">
-                      Edit
-                    </div>
-                  )}
-                </div>
+                </ToolTip>
               </div>
-              {/* {clickedCollection === collection.id.toString() && (
-                <div className="mt-2 flex justify-end text-sm">{result}</div>
-              )} */}
             </div>
           ))}
       </div>

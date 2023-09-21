@@ -1,6 +1,11 @@
 import React, { useState } from "react";
 
-export default function EditCard({ cardToEdit, setCards, cards }) {
+export default function EditCard({
+  cardToEdit,
+  setCards,
+  cards,
+  deleteCardMutation,
+}) {
   const [errorMessage, setErrorMessage] = useState("");
 
   const handleChange = (event, side) => {
@@ -82,11 +87,14 @@ export default function EditCard({ cardToEdit, setCards, cards }) {
       <div className="flex justify-end pt-2">
         <button
           onClick={() => {
-            let i = cards.indexOf(cardToEdit);
-            let newCards = [...cards];
-            newCards.splice(i, 1);
-            setCards(newCards);
-            // TODO: Make it work for saved cards
+            if (!cardToEdit.id) {
+              let i = cards.indexOf(cardToEdit);
+              let newCards = [...cards];
+              newCards.splice(i, 1);
+              setCards(newCards);
+            } else {
+              deleteCardMutation.mutate(cardToEdit.id);
+            }
           }}
           className="ml-2 rounded border border-red-400 bg-red-200 p-1 hover:bg-red-500"
         >

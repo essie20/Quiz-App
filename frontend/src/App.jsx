@@ -25,7 +25,7 @@ function App() {
     <div className="m-3">
       <div className="mb-3 block border-b border-gray-300 text-2xl font-semibold">
         <Link to={"/"}>
-          Collections <FontAwesomeIcon icon={faBook} />
+          Flip Cards <FontAwesomeIcon icon={faBook} />
         </Link>
       </div>
 

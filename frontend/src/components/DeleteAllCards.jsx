@@ -6,11 +6,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 library.add(faTrash);
 
-export default function DeleteAllCards({
-  collectionId,
-  deleteAllCards,
-  cards,
-}) {
+export default function DeleteAllCards({ deleteAllCards, cards }) {
   const [showConfirmation, setShowConfirmation] = useState(false);
 
   const [showMessage, setShowMessage] = useState(false);
@@ -29,11 +25,11 @@ export default function DeleteAllCards({
   const handleConfirmDeleteAll = () => {
     setShowConfirmation(false);
     setShowDeleteMessage(true);
+    deleteAllCards();
 
     setTimeout(() => {
-      deleteAllCards(collectionId);
       setShowDeleteMessage(false);
-    }, 2000);
+    }, 3000);
   };
   const handleCancelDeleteAll = () => {
     // Reset the confirmation box state
@@ -43,10 +39,10 @@ export default function DeleteAllCards({
 
   return (
     <>
-      <div className="rounded-lg rounded border border-red-400 font-semibold text-rose-600 hover:bg-red-600 hover:text-white">
+      <div className="ml-2 rounded border border-red-400 bg-red-300  p-1 hover:bg-red-500">
         <button onClick={handleDeleteAll}>
           Delete All
-          <FontAwesomeIcon className="ml-1" icon="trash" />
+          <FontAwesomeIcon className="ml-2" icon="trash" />
         </button>
       </div>
       {showMessage && (
